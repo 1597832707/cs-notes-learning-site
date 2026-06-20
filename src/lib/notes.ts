@@ -147,9 +147,52 @@ export function getNoteBySlug(slug: string): Note {
 export function getDailyNotes(date = new Date(), count = 3) {
   const notes = getAllNotes();
   const daySeed = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000);
-  const start = daySeed % notes.length;
+  const algorithmNotes = notes.filter(isAlgorithmPractice);
+  const foundationNotes = notes.filter((note) => !isAlgorithmPractice(note));
+  const plan = count <= 1 ? ["foundation"] : count === 2 ? ["foundation", "algorithm"] : ["foundation", "algorithm", "foundation"];
+  const selected: NoteSummary[] = [];
 
-  return Array.from({ length: count }, (_, index) => notes[(start + index) % notes.length]);
+  for (let index = 0; index < count; index += 1) {
+    const kind = plan[index % plan.length];
+    const primaryPool = kind === "algorithm" ? algorithmNotes : foundationNotes;
+    const fallbackPool = kind === "algorithm" ? foundationNotes : algorithmNotes;
+    const picked = pickDailyNote(primaryPool, daySeed, index, selected) ?? pickDailyNote(fallbackPool, daySeed, index, selected);
+
+    if (picked) selected.push(picked);
+  }
+
+  while (selected.length < count) {
+    const picked = pickDailyNote(notes, daySeed, selected.length, selected);
+    if (!picked) break;
+    selected.push(picked);
+  }
+
+  return selected;
+}
+
+function isAlgorithmPractice(note: NoteSummary) {
+  return (
+    note.category === "LeetCode" ||
+    note.category.includes("Offer") ||
+    note.category.includes("算法") ||
+    note.title.includes("Leetcode") ||
+    note.title.includes("LeetCode") ||
+    note.title.includes("剑指") ||
+    note.title.includes("算法") ||
+    /^\d+(\.\d+)?\s/.test(note.slug)
+  );
+}
+
+function pickDailyNote(pool: NoteSummary[], daySeed: number, slot: number, selected: NoteSummary[]) {
+  if (pool.length === 0) return undefined;
+  const start = (daySeed * 7 + slot * 13) % pool.length;
+
+  for (let offset = 0; offset < pool.length; offset += 1) {
+    const note = pool[(start + offset) % pool.length];
+    if (!selected.some((item) => item.slug === note.slug)) return note;
+  }
+
+  return undefined;
 }
 
 export function getNotesByCategory() {
