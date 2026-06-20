@@ -13,7 +13,14 @@ export type NoteSummary = {
 
 export type Note = NoteSummary & {
   content: string;
+  headings: NoteHeading[];
   sourcePath: string;
+};
+
+export type NoteHeading = {
+  id: string;
+  level: number;
+  text: string;
 };
 
 function titleFromFile(fileName: string) {
@@ -48,6 +55,54 @@ function estimateMinutes(content: string) {
   return Math.max(8, Math.ceil((chineseChars + englishWords) / 420));
 }
 
+function stripGeneratedToc(content: string) {
+  return content.replace(/<!--\s*GFM-TOC\s*-->[\s\S]*?<!--\s*GFM-TOC\s*-->/g, "").trim();
+}
+
+function stripMarkdown(text: string) {
+  return text
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/[*_~]/g, "")
+    .trim();
+}
+
+export function headingId(text: string) {
+  const base = stripMarkdown(text)
+    .toLowerCase()
+    .replace(/[^\u4e00-\u9fa5a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+
+  return base || "section";
+}
+
+function uniqueHeadingId(text: string, seen: Map<string, number>) {
+  const base = headingId(text);
+  const count = seen.get(base) ?? 0;
+  seen.set(base, count + 1);
+  return count === 0 ? base : `${base}-${count + 1}`;
+}
+
+function extractHeadings(content: string) {
+  const seen = new Map<string, number>();
+
+  return content
+    .split("\n")
+    .map((line) => line.match(/^(#{2,4})\s+(.+)$/))
+    .filter((match): match is RegExpMatchArray => Boolean(match))
+    .map((match) => {
+      const text = stripMarkdown(match[2]);
+
+      return {
+        id: uniqueHeadingId(text, seen),
+        level: match[1].length,
+        text,
+      };
+    });
+}
+
 export function getAllNotes(): NoteSummary[] {
   const files = fs
     .readdirSync(notesRoot)
@@ -76,13 +131,15 @@ export function getNoteBySlug(slug: string): Note {
   const raw = fs.readFileSync(sourcePath, "utf8");
   const parsed = matter(raw);
   const title = parsed.data.title ?? titleFromFile(fileName);
+  const content = stripGeneratedToc(parsed.content);
 
   return {
     slug,
     title,
     category: categoryForTitle(title),
     estimatedMinutes: estimateMinutes(parsed.content),
-    content: parsed.content,
+    content,
+    headings: extractHeadings(content),
     sourcePath,
   };
 }

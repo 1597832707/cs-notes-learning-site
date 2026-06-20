@@ -16,6 +16,11 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+
 body {
   min-height: 100vh;
   background: var(--background);
@@ -35,6 +40,7 @@ a {
 .prose h1,
 .prose h2,
 .prose h3 {
+  scroll-margin-top: 2rem;
   color: #0f172a;
   font-weight: 700;
   line-height: 1.25;
@@ -53,6 +59,30 @@ a {
 
 .prose h3 {
   font-size: 1.35rem;
+}
+
+.prose h4 {
+  color: #0f172a;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  scroll-margin-top: 2rem;
+}
+
+.heading-anchor {
+  color: #06b6d4;
+  float: left;
+  font-weight: 600;
+  margin-left: -1.1em;
+  opacity: 0;
+  padding-right: 0.35em;
+}
+
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.prose h4:hover .heading-anchor,
+.heading-anchor:focus {
+  opacity: 1;
 }
 
 .prose p,
