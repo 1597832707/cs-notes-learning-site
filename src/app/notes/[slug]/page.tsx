@@ -35,6 +35,28 @@ function createHeadingIdResolver(headings: NoteHeading[]) {
   };
 }
 
+function extractHeadingsFromContent(content: string): NoteHeading[] {
+  const seen = new Map<string, number>();
+
+  return Array.from(content.matchAll(/^(#{2,4})[ \t]+(.+)$/gm)).map((match) => {
+    const text = match[2]
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/<[^>]+>/g, "")
+      .replace(/[*_~]/g, "")
+      .trim();
+    const base = headingId(text);
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+
+    return {
+      id: count === 0 ? base : `${base}-${count + 1}`,
+      level: match[1].length,
+      text,
+    };
+  });
+}
+
 function createHeadingRenderer(level: 2 | 3 | 4, resolveId: (text: string) => string) {
   const Tag = `h${level}` as const;
 
@@ -69,13 +91,14 @@ export async function generateMetadata({ params }: NotePageProps) {
 export default async function NotePage({ params }: NotePageProps) {
   const { slug } = await params;
   const note = getNoteBySlug(slug);
-  const resolveHeadingId = createHeadingIdResolver(note.headings);
+  const headings = note.headings.length > 0 ? note.headings : extractHeadingsFromContent(note.content);
+  const resolveHeadingId = createHeadingIdResolver(headings);
   const Heading2 = createHeadingRenderer(2, resolveHeadingId);
   const Heading3 = createHeadingRenderer(3, resolveHeadingId);
   const Heading4 = createHeadingRenderer(4, resolveHeadingId);
 
   return (
-    <main className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <main className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:grid-cols-[minmax(0,1fr)_260px] md:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 lg:px-6 lg:py-10 lg:grid-cols-[minmax(0,1fr)_320px]">
       <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10">
         <Link className="text-sm font-medium text-cyan-700 hover:text-cyan-900" href="/notes">
           返回目录
@@ -101,12 +124,12 @@ export default async function NotePage({ params }: NotePageProps) {
         </div>
       </article>
 
-      <aside className="flex h-fit flex-col gap-6 lg:sticky lg:top-6">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-semibold text-slate-500">本文目录</p>
-          {note.headings.length > 0 ? (
-            <nav className="mt-4 max-h-[55vh] space-y-1 overflow-auto pr-2 text-sm">
-              {note.headings.map((heading) => (
+      <aside className="flex h-fit flex-col gap-6 sm:sticky sm:top-6">
+        <section className="rounded-3xl border border-cyan-200 bg-white p-5 shadow-sm lg:p-6">
+          <p className="text-sm font-semibold text-cyan-800">本文目录</p>
+          {headings.length > 0 ? (
+            <nav className="mt-4 max-h-[65vh] space-y-1 overflow-auto pr-2 text-sm">
+              {headings.map((heading) => (
                 <a
                   className="block rounded-xl px-3 py-2 text-slate-600 transition hover:bg-cyan-50 hover:text-cyan-800"
                   href={`#${heading.id}`}
