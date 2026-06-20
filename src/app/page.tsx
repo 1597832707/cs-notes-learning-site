@@ -1,65 +1,63 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getAllNotes, getDailyNotes, noteHref } from "@/lib/notes";
 
 export default function Home() {
+  const notes = getAllNotes();
+  const dailyNotes = getDailyNotes(new Date(), 3);
+  const categories = new Set(notes.map((note) => note.category));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-10">
+      <section className="grid gap-8 rounded-[2rem] bg-slate-950 p-8 text-white shadow-sm md:grid-cols-[1.25fr_0.75fr] md:p-12">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-200">CS-Notes Learning</p>
+          <h1 className="mt-5 max-w-3xl text-5xl font-bold tracking-tight md:text-6xl">
+            每天学一点计算机基础
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+            基于本地 CS-Notes 笔记搭建的学习网站。先完成每日学习，再进入专题目录查漏补缺，后续可以接入大模型做上下文答疑。
           </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link className="rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-200" href="/daily">
+              开始今日学习
+            </Link>
+            <Link className="rounded-full border border-white/20 px-5 py-3 font-semibold text-white transition hover:bg-white/10" href="/notes">
+              查看课程目录
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+          <p className="text-sm text-cyan-100">当前内容库</p>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="rounded-2xl bg-white/10 p-4">
+              <p className="text-3xl font-bold">{notes.length}</p>
+              <p className="mt-1 text-sm text-slate-300">篇笔记</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-4">
+              <p className="text-3xl font-bold">{categories.size}</p>
+              <p className="mt-1 text-sm text-slate-300">个主题</p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="grid gap-5 md:grid-cols-3">
+        {dailyNotes.map((note, index) => (
+          <Link className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-cyan-200 hover:bg-cyan-50" href={noteHref(note.slug)} key={note.slug}>
+            <p className="text-sm font-semibold text-cyan-700">今日任务 {index + 1}</p>
+            <h2 className="mt-3 text-xl font-semibold text-slate-950">{note.title}</h2>
+            <p className="mt-3 text-sm text-slate-500">{note.category} · 预计 {note.estimatedMinutes} 分钟</p>
+          </Link>
+        ))}
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <h2 className="text-2xl font-semibold text-slate-950">下一阶段：大模型答疑</h2>
+        <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+          初版先把学习内容跑通。后续可以把 Markdown 切片、向量化，然后在每篇文章旁边提供 AI 问答，让回答优先引用 CS-Notes 原文。
+        </p>
+      </section>
+    </main>
   );
 }

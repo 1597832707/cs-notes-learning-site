@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -12,15 +12,111 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.prose {
+  color: #334155;
+  line-height: 1.8;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  color: #0f172a;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 2rem;
+}
+
+.prose h1 {
+  font-size: 2.25rem;
+}
+
+.prose h2 {
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 1.75rem;
+  padding-bottom: 0.5rem;
+}
+
+.prose h3 {
+  font-size: 1.35rem;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose pre,
+.prose table {
+  margin-top: 1rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-top: 0.35rem;
+}
+
+.prose code {
+  border-radius: 0.4rem;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.9em;
+  padding: 0.15rem 0.35rem;
+}
+
+.prose pre {
+  overflow: auto;
+  border-radius: 1rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1.25rem;
+}
+
+.prose pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.prose blockquote {
+  border-left: 4px solid #06b6d4;
+  color: #475569;
+  padding-left: 1rem;
+}
+
+.prose img {
+  border-radius: 1rem;
+  margin: 1.5rem auto;
+  max-width: 100%;
+}
+
+.prose table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 0.75rem;
 }

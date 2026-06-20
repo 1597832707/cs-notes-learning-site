@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CS-Notes Learning Site
 
-## Getting Started
+基于本地 `CS-Notes/notes` Markdown 内容搭建的 Next.js 学习网站初版。
 
-First, run the development server:
+## 功能
+
+- 首页：展示内容库概览和今日任务入口
+- 课程目录：自动扫描并按主题分组展示 `notes/*.md`
+- 笔记阅读页：渲染 Markdown、表格、代码块和图片
+- 每日学习：按日期稳定推荐 3 篇内容
+- AI 答疑区域：已预留文章侧边栏入口，后续可接入大模型/RAG
+
+## 启动
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+然后打开：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 内容路径
 
-## Learn More
+默认读取项目内置内容：
 
-To learn more about Next.js, take a look at the following resources:
+```text
+content\notes
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+如果以后想改成读取别的 notes 目录，可以复制 `.env.local.example` 为 `.env.local`，然后修改：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+CS_NOTES_PATH=新的 notes 目录路径
+```
 
-## Deploy on Vercel
+## 验证
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npm run build
+```
