@@ -36,6 +36,28 @@ content\notes
 CS_NOTES_PATH=新的 notes 目录路径
 ```
 
+## 学习记录数据库
+
+学习记录使用 Postgres 保存。部署到 Vercel 后，在项目的环境变量里添加：
+
+```text
+DATABASE_URL=你的 Postgres 连接字符串
+```
+
+没有配置数据库时，网站仍可阅读内容，但“标记已学”和已学统计不会保存。
+
+记录表会在第一次访问 `/api/progress` 时自动创建：
+
+```sql
+create table if not exists learning_records (
+  learner_id text not null,
+  note_slug text not null,
+  completed_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (learner_id, note_slug)
+);
+```
+
 ## 验证
 
 ```bash

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { NoteCompleteButton } from "@/components/note-complete-button";
 import { getAllNotes, getNoteBySlug, headingId, type NoteHeading } from "@/lib/notes";
 
 type NotePageProps = {
@@ -125,6 +126,8 @@ export default async function NotePage({ params }: NotePageProps) {
       </article>
 
       <aside className="flex h-fit flex-col gap-6 sm:sticky sm:top-6">
+        <NoteCompleteButton slug={note.slug} />
+
         <section className="rounded-3xl border border-cyan-200 bg-white p-5 shadow-sm lg:p-6">
           <p className="text-sm font-semibold text-cyan-800">本文目录</p>
           {headings.length > 0 ? (

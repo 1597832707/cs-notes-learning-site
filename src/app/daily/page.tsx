@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NoteProgressBadge } from "@/components/note-progress-badge";
 import { getDailyNotes, noteHref } from "@/lib/notes";
 
 export default function DailyPage() {
@@ -26,7 +27,10 @@ export default function DailyPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-sm font-semibold text-cyan-700">第 {index + 1} 项 · {note.category}</p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-950 group-hover:text-cyan-950">{note.title}</h2>
+                <div className="mt-2 flex items-start gap-3">
+                  <h2 className="text-2xl font-semibold text-slate-950 group-hover:text-cyan-950">{note.title}</h2>
+                  <NoteProgressBadge slug={note.slug} />
+                </div>
               </div>
               <p className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600 group-hover:bg-white">
                 {note.estimatedMinutes} 分钟

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { NoteProgressBadge } from "@/components/note-progress-badge";
+import { ProgressSummary } from "@/components/progress-summary";
 import { getAllNotes, getDailyNotes, noteHref } from "@/lib/notes";
 
 export default function Home() {
@@ -38,6 +40,7 @@ export default function Home() {
               <p className="text-3xl font-bold">{categories.size}</p>
               <p className="mt-1 text-sm text-slate-300">个主题</p>
             </div>
+            <ProgressSummary />
           </div>
         </div>
       </section>
@@ -46,7 +49,10 @@ export default function Home() {
         {dailyNotes.map((note, index) => (
           <Link className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-cyan-200 hover:bg-cyan-50" href={noteHref(note.slug)} key={note.slug}>
             <p className="text-sm font-semibold text-cyan-700">今日任务 {index + 1}</p>
-            <h2 className="mt-3 text-xl font-semibold text-slate-950">{note.title}</h2>
+            <div className="mt-3 flex items-start justify-between gap-3">
+              <h2 className="text-xl font-semibold text-slate-950">{note.title}</h2>
+              <NoteProgressBadge slug={note.slug} />
+            </div>
             <p className="mt-3 text-sm text-slate-500">{note.category} · 预计 {note.estimatedMinutes} 分钟</p>
           </Link>
         ))}
